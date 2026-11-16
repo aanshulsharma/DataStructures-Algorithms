@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learn Recursion — Interactive Guide</title>
+<style>
+:root{
+  --bg:#0f1420; --panel:#171e2e; --panel2:#1e2740; --text:#e6ebf5; --muted:#93a0bd; --border:#2b3654;
+  --accent:#5aa9ff; --green:#3ecf8e; --red:#ff6b6b; --amber:#ffb84d; --purple:#b388ff; --code:#0b0f19;
+}
+body.light{
+  --bg:#f5f7fb; --panel:#ffffff; --panel2:#eef2fb; --text:#1c2333; --muted:#5b6785; --border:#d5dcee;
+  --accent:#1a6fe0; --green:#12935c; --red:#d63b3b; --amber:#c97a00; --purple:#6c3fd1; --code:#f0f3fa;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 "Segoe UI",system-ui,sans-serif}
+header{position:sticky;top:0;z-index:20;background:var(--panel);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;padding:10px 18px;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;white-space:nowrap}
+#menuBtn{display:none}
+.prog{flex:1;min-width:140px;max-width:380px;height:10px;background:var(--panel2);border-radius:6px;overflow:hidden}
+.prog>div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--green));transition:width .4s}
+#progText{font-size:13px;color:var(--muted)}
+.spacer{flex:1}
+select,button,input[type=text],input[type=number],textarea{font:inherit;color:var(--text);background:var(--panel2);
+  border:1px solid var(--border);border-radius:8px;padding:6px 12px}
+button{cursor:pointer;transition:.15s}
+button:hover:not(:disabled){border-color:var(--accent);transform:translateY(-1px)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+button.good{background:var(--green);color:#06210f;border-color:var(--green)}
+.layout{display:flex;max-width:1320px;margin:0 auto}
+nav{width:270px;flex:none;position:sticky;top:58px;align-self:flex-start;height:calc(100vh - 58px);overflow:auto;
+  padding:18px 12px;border-right:1px solid var(--border)}
+nav a{display:flex;gap:8px;align-items:center;padding:7px 10px;border-radius:8px;color:var(--muted);text-decoration:none;font-size:14px}
+nav a:hover{background:var(--panel2);color:var(--text)}
+nav a.active{background:var(--panel2);color:var(--accent);font-weight:600}
+nav a .dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);flex:none;font-size:10px;
+  display:flex;align-items:center;justify-content:center;color:#06210f}
+nav a.done .dot{background:var(--green);border-color:var(--green)}
+main{flex:1;min-width:0;padding:24px 28px 80px}
+section.lesson{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:24px 28px;margin-bottom:28px;scroll-margin-top:72px}
+section.lesson>h2{margin:0 0 4px;font-size:26px}
+.tag{display:inline-block;font-size:12px;padding:2px 10px;border-radius:12px;background:var(--panel2);color:var(--muted);margin-bottom:10px}
+h3{margin:22px 0 6px;font-size:18px;color:var(--accent)}
+p{margin:8px 0}
+.callout{border-left:4px solid var(--accent);background:var(--panel2);padding:10px 16px;border-radius:0 10px 10px 0;margin:14px 0}
+.callout.warn{border-color:var(--amber)} .callout.ok{border-color:var(--green)} .callout.bad{border-color:var(--red)}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font-family:Consolas,"Cascadia Code",monospace;font-size:.9em}
+pre.code{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:14px 16px;overflow:auto;
+  font:14px/1.55 Consolas,"Cascadia Code",monospace;margin:10px 0;position:relative;white-space:pre}
+pre.code .k{color:var(--purple);font-weight:600} .pre .s,pre.code .s{color:var(--green)} pre.code .n{color:var(--amber)}
+pre.code .c{color:var(--muted);font-style:italic}
+.copy{position:absolute;top:6px;right:6px;font-size:12px;padding:2px 8px}
+.widget{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin:16px 0}
+.widget>.wt{font-weight:700;margin-bottom:10px;display:flex;gap:8px;align-items:center}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.card{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:12px 16px}
+.card h4{margin:0 0 6px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.tabs button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.msg{min-height:44px;padding:10px 14px;border-radius:10px;background:var(--code);border:1px solid var(--border);margin:10px 0}
+.msg.call{border-color:var(--accent)} .msg.ret{border-color:var(--green)} .msg.base{border-color:var(--amber)}
+details{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;margin:8px 0}
+summary{cursor:pointer;font-weight:600}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+th,td{border:1px solid var(--border);padding:7px 10px;text-align:left}
+th{background:var(--panel2)}
+.badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;color:#06210f}
+.easy{background:var(--green)} .med{background:var(--amber)} .hard{background:var(--red)}
+.donebar{margin-top:22px;padding-top:14px;border-top:1px dashed var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+
+/* dolls */
+.dolls{display:flex;align-items:flex-end;justify-content:center;gap:10px;min-height:120px;margin:8px 0}
+.doll{transition:.4s;opacity:.25;filter:grayscale(1);text-align:center}
+.doll.open{opacity:1;filter:none}
+.doll.cur{transform:translateY(-8px) scale(1.1)}
+.doll.solid span{outline:3px solid var(--amber);border-radius:50%}
+.doll span{display:inline-block}
+/* call stack */
+.vizgrid{display:grid;grid-template-columns:1.1fr 1fr;gap:14px}
+.stack{display:flex;flex-direction:column-reverse;gap:6px;min-height:200px;border:2px dashed var(--border);border-radius:12px;padding:8px;justify-content:flex-start}
+.frame{padding:8px 12px;border-radius:8px;background:var(--panel);border:1px solid var(--border);font-family:Consolas,monospace;font-size:14px;animation:pop .25s}
+.frame.top{border-color:var(--accent);box-shadow:0 0 0 2px rgba(90,169,255,.3)}
+.frame.isbase{border-color:var(--amber);box-shadow:0 0 0 2px rgba(255,184,77,.3)}
+.frame small{display:block;color:var(--muted);font-family:"Segoe UI",sans-serif}
+.frame .got{color:var(--green)}
+@keyframes pop{from{transform:scale(.85) translateY(-10px);opacity:0}to{transform:none;opacity:1}}
+.out{font-family:Consolas,monospace;background:var(--code);border:1px solid var(--border);border-radius:10px;padding:8px 12px;min-height:60px;white-space:pre-wrap}
+.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+/* fib tree */
+.treebox{overflow:auto;background:var(--code);border:1px solid var(--border);border-radius:10px;padding:6px}
+.tnode circle{stroke:var(--border);stroke-width:2;cursor:pointer}
+.tnode text{font:600 12px Consolas,monospace;fill:#fff;pointer-events:none;text-anchor:middle;dominant-baseline:central}
+.tnode.hl circle{stroke:#fff;stroke-width:4}
+.tedge{stroke:var(--muted);stroke-width:1.5}
+/* hanoi */
+.pegs{display:flex;gap:12px;justify-content:center}
+.peg{flex:1;max-width:240px;height:200px;border:2px solid var(--border);border-radius:12px;display:flex;flex-direction:column-reverse;
+  align-items:center;padding:6px 6px 10px;gap:3px;cursor:pointer;position:relative;background:linear-gradient(var(--panel) 0 0) center/6px 100% no-repeat}
+.peg.sel{border-color:var(--accent);box-shadow:0 0 0 3px rgba(90,169,255,.3)}
+.peg .lbl{position:absolute;bottom:-24px;left:0;right:0;text-align:center;color:var(--muted);font-weight:700}
+.disk{height:20px;border-radius:10px;transition:.2s;z-index:1}
+/* bars */
+.bar{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:14px}
+.bar .lab{width:170px;flex:none}
+.bar .tr{flex:1;background:var(--code);border-radius:6px;height:24px;overflow:hidden}
+.bar .fl{height:100%;transition:width .3s;border-radius:6px}
+.bar .num{width:130px;text-align:right;font-family:Consolas,monospace;flex:none}
+/* quiz */
+.opt{display:block;width:100%;text-align:left;margin:6px 0}
+.opt.right{background:var(--green);color:#06210f;border-color:var(--green)}
+.opt.wrong{background:var(--red);color:#fff;border-color:var(--red)}
+.hlrole{background:rgba(255,184,77,.28);border-radius:4px;outline:1px solid var(--amber)}
+.rv{display:none} .rv.show{display:block;animation:pop .3s}
+.err{color:var(--red);font-weight:600}
+@media(max-width:980px){
+  nav{position:fixed;left:-290px;top:58px;z-index:30;background:var(--panel);transition:.25s;height:calc(100vh - 58px)}
+  nav.open{left:0;box-shadow:0 0 30px rgba(0,0,0,.5)}
+  #menuBtn{display:inline-block}
+  .vizgrid,.grid2{grid-template-columns:1fr}
+  main{padding:14px}
+  section.lesson{padding:18px}
+}
+</style>
+</head>
+<body>
+<header>
+  <button id="menuBtn" onclick="document.querySelector('nav').classList.toggle('open')">☰</button>
+  <h1>🔁 Learn Recursion</h1>
+  <div class="prog"><div id="progBar"></div></div>
+  <span id="progText">0 / 0 lessons</span>
+  <span class="spacer"></span>
+  <button id="themeBtn" title="Toggle theme">🌓</button>
+  <button id="resetBtn" title="Reset progress">↺</button>
+</header>
+
+<div class="layout">
+<nav id="toc"></nav>
+<main>
+
+<!-- ============ 1 ============ -->
+<section class="lesson" id="l1">
+  <h2>1. What is recursion?</h2><span class="tag">⏱ 5 min · intuition</span>
+  <p><b>Recursion</b> is when a function solves a problem by calling <i>itself</i> on a <b>smaller version</b> of the same problem, until the problem is so small that the answer is obvious.</p>
+  <div class="callout"><b>Real-life picture:</b> A set of Russian nesting dolls. To find the smallest doll, you open the current doll — and inside is another set of dolls (the same problem, but smaller). Keep going until a doll is solid. That solid doll is the <b>base case</b>.</div>
+
+  <div class="widget">
+    <div class="wt">🪆 Try it: "Find the smallest doll"</div>
+    <div class="dolls" id="dolls"></div>
+    <div class="msg" id="dollMsg">Click <b>Open next doll</b> to start.</div>
+    <div class="row"><button class="primary" id="dollBtn">Open next doll</button><button id="dollReset">Reset</button></div>
+  </div>
+
+  <h3>Other places you see recursion</h3>
+  <div class="grid3">
+    <div class="card"><h4>📁 Folders</h4>A folder contains files <i>and folders</i>. To count all files, count the folder's files + count each sub-folder the same way.</div>
+    <div class="card"><h4>🪞 Two mirrors</h4>A mirror reflecting a mirror reflecting a mirror… (with no end — which is why we need a stopping rule!)</div>
+    <div class="card"><h4>🌿 Trees & Fractals</h4>A branch splits into smaller branches that look like the whole tree.</div>
+  </div>
+  <div class="callout ok"><b>Key idea:</b> Big problem = (tiny piece of work) + (the same problem, but smaller).</div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="lesson" id="l2">
+  <h2>2. Anatomy of a recursive function</h2><span class="tag">⏱ 5 min · the 3 ingredients</span>
+  <p>Every correct recursive function has exactly these three ingredients. Click each one to see where it lives in the code.</p>
+  <div class="widget">
+    <div class="row" id="anatBtns">
+      <button data-r="base">🛑 Base case</button>
+      <button data-r="rec">🔁 Recursive case</button>
+      <button data-r="prog">📉 Progress toward base</button>
+    </div>
+<pre class="code" id="anat"><span class="k">static int</span> factorial(<span class="k">int</span> n) {
+<span data-role="base">    <span class="k">if</span> (n &lt;= <span class="n">1</span>) <span class="k">return</span> <span class="n">1</span>;                 </span><span class="c">// base case</span>
+<span data-role="rec">    <span class="k">return</span> n * factorial(<span data-role="prog">n - <span class="n">1</span></span>);</span>  <span class="c">// recursive case</span>
+}</pre>
+    <div class="msg" id="anatMsg">Pick an ingredient above.</div>
+  </div>
+  <h3>The same function, as plain Java</h3>
+  <pre class="code" data-code="factorial"></pre>
+  <div class="callout warn"><b>Forget the base case</b> → the function calls itself forever → <b>Stack Overflow</b> 💥. Forget <i>progress</i> (e.g. calling <code>factorial(n)</code> instead of <code>factorial(n-1)</code>) → same disaster.</div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="lesson" id="l3">
+  <h2>3. The Call Stack — watch it happen</h2><span class="tag">⏱ 10 min · most important lesson</span>
+  <p>When a function calls itself, the computer stacks a new <b>frame</b> on top of the <b>call stack</b> (like stacking plates). A frame can't finish until the frame above it returns. At the base case the stack stops growing, then <b>unwinds</b>, passing answers back down.</p>
+
+  <div class="widget">
+    <div class="wt">🎬 Step-through visualizer</div>
+    <div class="row">
+      <label>Function <select id="vzFn"></select></label>
+      <label>Input <input type="text" id="vzIn" size="10"></label>
+      <button class="primary" id="vzRun">Load</button>
+      <span id="vzHint" style="color:var(--muted);font-size:13px"></span>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button id="vzReset">⏮</button><button id="vzBack">◀ Back</button><button class="primary" id="vzNext">Next ▶</button>
+      <button id="vzPlay">▶▶ Auto-play</button>
+      <label style="font-size:13px">Speed <input type="range" id="vzSpeed" min="150" max="1500" value="700" style="direction:rtl"></label>
+      <input type="range" id="vzSlider" min="0" max="0" value="0" style="flex:1;min-width:120px">
+      <span id="vzStepNo" style="font-size:13px;color:var(--muted)"></span>
+    </div>
+    <div class="msg" id="vzMsg"></div>
+    <div class="vizgrid">
+      <div><b>Call stack</b> <small style="color:var(--muted)">(top = currently running)</small><div class="stack" id="vzStack"></div></div>
+      <div>
+        <b>Output printed</b><div class="out" id="vzOut">—</div>
+        <b style="display:block;margin-top:10px">Finished calls (in order)</b><div class="out" id="vzDone">—</div>
+      </div>
+    </div>
+    <pre class="code" id="vzCode"></pre>
+  </div>
+
+  <div class="widget">
+    <div class="wt">💥 What if there is NO base case?</div>
+    <div class="row"><button class="bad" id="soBtn" style="background:var(--red);color:#fff">Remove base case & run</button><button id="soReset">Reset</button></div>
+    <div class="stack" id="soStack" style="min-height:120px;margin-top:10px"></div>
+    <div class="msg" id="soMsg">Code: <code>function bad(n) { return bad(n - 1); }</code> — never stops.</div>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="lesson" id="l4">
+  <h2>4. How to think recursively</h2><span class="tag">⏱ 6 min · the "leap of faith"</span>
+  <p>Beginners try to trace every call in their head — it hurts. Experts use the <b>leap of faith</b>: <i>assume the function already works for smaller inputs</i>, and only figure out how to use that answer.</p>
+  <div class="widget">
+    <div class="wt">🧠 Example: sum of an array — build the solution step by step</div>
+    <div id="rvBox">
+      <div class="rv show"><b>Step 1 — Define it.</b> <code>sum(arr)</code> returns the total of all numbers in <code>arr</code>.</div>
+      <div class="rv"><b>Step 2 — Smallest case (base).</b> An empty array has sum <code>0</code>.</div>
+      <div class="rv"><b>Step 3 — Leap of faith.</b> Pretend <code>sum(arr without first item)</code> magically works. Call it <code>rest</code>.</div>
+      <div class="rv"><b>Step 4 — Combine.</b> <code>sum(arr) = first + rest</code>.</div>
+      <div class="rv"><b>Step 5 — Check progress.</b> The array gets 1 shorter each call, so it must reach empty. ✅</div>
+      <div class="rv"><pre class="code" data-code="sumArray"></pre></div>
+    </div>
+    <div class="row"><button class="primary" id="rvBtn">Reveal next step</button><button id="rvReset">Reset</button></div>
+  </div>
+  <div class="callout ok"><b>Recipe:</b><br>1️⃣ What's the smallest input? → base case.<br>2️⃣ How do I shrink the input by one step? → recursive call.<br>3️⃣ Given the answer for the smaller input, how do I build the answer for this one? → combine.</div>
+  <h3>Order matters: code before vs. after the call</h3>
+<pre class="code" data-lang="java">static void demo(int n) {
+    if (n == 0) return;
+    System.out.println("going down " + n);   // runs BEFORE the call  (on the way down)
+    demo(n - 1);
+    System.out.println("coming up " + n);    // runs AFTER the call   (on the way up)
+}</pre>
+  <p>Use the visualizer above with <b>countdown</b> to see "down" and "up" printing — <code>demo(3)</code> prints <code>3 2 1</code> going down and <code>1 2 3</code> coming up.</p>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="lesson" id="l5">
+  <h2>5. Tree recursion: Fibonacci</h2><span class="tag">⏱ 10 min · multiple calls & memoization</span>
+  <p>When a function calls itself <b>more than once</b>, calls form a <b>tree</b>. <code>fib(n) = fib(n-1) + fib(n-2)</code>. Notice how the same values are computed again and again.</p>
+  <pre class="code" data-code="fib"></pre>
+  <div class="widget">
+    <div class="wt">🌳 Fibonacci call tree</div>
+    <div class="row">
+      <label>n = <input type="number" id="fbN" min="2" max="7" value="5" style="width:70px"></label>
+      <label><input type="checkbox" id="fbMemo"> Use memoization (cache)</label>
+      <button id="fbBack">◀</button><button class="primary" id="fbNext">▶ Next call</button><button id="fbAll">Show all</button><button id="fbPlay">▶▶ Play</button>
+    </div>
+    <div class="msg" id="fbMsg"></div>
+    <div class="treebox"><svg id="fbSvg"></svg></div>
+    <div style="font-size:13px;color:var(--muted);margin-top:6px">
+      <span style="color:var(--accent)">●</span> normal call &nbsp; <span style="color:var(--green)">●</span> base case (n ≤ 1) &nbsp; <span style="color:var(--amber)">●</span> answer found in cache. Hover a node: all calls with the same n light up — that's wasted work!</div>
+  </div>
+  <div class="callout ok"><b>Memoization</b> = remember answers you've already computed. It turns <code>O(2ⁿ)</code> into <code>O(n)</code>. Toggle it above and compare the number of calls.</div>
+  <pre class="code" data-code="fibMemo"></pre>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="lesson" id="l6">
+  <h2>6. Types of recursion</h2><span class="tag">⏱ 6 min · vocabulary</span>
+  <table>
+    <tr><th>Type</th><th>Idea</th><th>Example</th></tr>
+    <tr><td><b>Linear</b></td><td>One recursive call per invocation</td><td>factorial, sum of list</td></tr>
+    <tr><td><b>Binary / Tree</b></td><td>Two (or more) recursive calls</td><td>Fibonacci, tree traversal, subsets</td></tr>
+    <tr><td><b>Tail</b></td><td>The recursive call is the <i>last</i> thing done (nothing left to do after it returns)</td><td>factorial with accumulator, gcd</td></tr>
+    <tr><td><b>Head</b></td><td>Recursive call first, work after</td><td>printing a list in reverse</td></tr>
+    <tr><td><b>Mutual / Indirect</b></td><td>A calls B, B calls A</td><td>isEven / isOdd</td></tr>
+    <tr><td><b>Nested</b></td><td>The argument of a call is itself a recursive call</td><td>Ackermann function</td></tr>
+  </table>
+  <div class="grid2">
+    <div>
+      <b>Not tail recursive</b> (multiplication happens after the call returns)
+<pre class="code" data-lang="java">static int fact(int n) {
+    if (n &lt;= 1) return 1;
+    return n * fact(n - 1);
+}</pre>
+    </div>
+    <div>
+      <b>Tail recursive</b> (call is the last action; result carried in <code>acc</code>)
+<pre class="code" data-lang="java">static int fact(int n, int acc) {
+    if (n &lt;= 1) return acc;
+    return fact(n - 1, n * acc);
+}
+// call it as: fact(5, 1)</pre>
+    </div>
+  </div>
+  <div class="callout warn">Some languages (e.g. Scheme) optimise tail calls so the stack doesn't grow. <b>Java does not</b> — the JVM never eliminates tail calls, so even a tail-recursive method can throw <code>StackOverflowError</code> on deep input. Use a loop when depth could be very large.</div>
+  <h3>Mutual recursion</h3>
+<pre class="code" data-lang="java">static boolean isEven(int n) { return n == 0 ? true  : isOdd(n - 1); }
+static boolean isOdd(int n)  { return n == 0 ? false : isEven(n - 1); }</pre>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="lesson" id="l7">
+  <h2>7. Classic problem: Tower of Hanoi</h2><span class="tag">⏱ 10 min · play it, then see the recursion</span>
+  <p>Move all disks from peg <b>A</b> to peg <b>C</b>. Rules: move one disk at a time, and never put a bigger disk on a smaller one. <b>Click a peg to pick up its top disk, click another peg to drop it.</b></p>
+  <div class="widget">
+    <div class="row">
+      <label>Disks <select id="hnN"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label>
+      <button id="hnReset">New game</button><button class="primary" id="hnSolve">🤖 Auto-solve with recursion</button>
+      <span id="hnStat" style="margin-left:auto;font-weight:600"></span>
+    </div>
+    <div class="msg" id="hnMsg"></div>
+    <div class="pegs" id="pegs" style="margin-bottom:28px"></div>
+    <div class="out" id="hnLog" style="max-height:160px;overflow:auto">Recursive log appears here during auto-solve…</div>
+  </div>
+  <div class="callout ok"><b>The recursive insight:</b> to move <code>n</code> disks from A to C:<br>1. Move <code>n-1</code> disks A → B (using C) <i>— leap of faith!</i><br>2. Move the biggest disk A → C.<br>3. Move <code>n-1</code> disks B → C (using A).<br>Base case: 0 disks → do nothing. Minimum moves = <code>2ⁿ − 1</code>.</div>
+  <pre class="code" data-code="hanoi"></pre>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="lesson" id="l8">
+  <h2>8. Backtracking: generating subsets</h2><span class="tag">⏱ 8 min · "choose / don't choose"</span>
+  <p>Recursion shines when you must explore many possibilities. For each item you make a choice — <b>skip it</b> or <b>take it</b> — and recurse on the rest. When you run out of items, you've built one complete answer.</p>
+  <pre class="code" data-code="subsets"></pre>
+  <div class="callout">👉 Open the visualizer in <a href="#l3">Lesson 3</a>, select <b>subsets</b>, input <code>abc</code> and step through. Watch the <b>Output printed</b> box fill up with all 8 subsets.</div>
+  <div class="widget">
+    <div class="wt">🎛 Quick explorer: how many subsets?</div>
+    <div class="row"><label>Items <input type="range" id="ssN" min="0" max="12" value="3"></label><b id="ssTxt"></b></div>
+    <div id="ssList" class="out" style="max-height:150px;overflow:auto"></div>
+  </div>
+  <div class="callout warn"><b>Backtracking</b> = recursion + <i>undoing</i> a choice after exploring it (e.g. remove the last item from the path). It's the engine behind N-Queens, Sudoku solvers, maze solving, and permutations.</div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section class="lesson" id="l9">
+  <h2>9. Time & space cost of recursion</h2><span class="tag">⏱ 6 min · complexity</span>
+  <ul>
+    <li><b>Time</b> ≈ (number of calls) × (work per call).</li>
+    <li><b>Space</b> ≈ the <b>maximum depth</b> of the call stack (each frame uses memory!).</li>
+  </ul>
+  <table>
+    <tr><th>Function</th><th>Calls</th><th>Time</th><th>Stack space</th></tr>
+    <tr><td>factorial(n), sum(n)</td><td>n</td><td>O(n)</td><td>O(n)</td></tr>
+    <tr><td>fib(n) naive</td><td>~1.6ⁿ</td><td>O(2ⁿ)</td><td>O(n)</td></tr>
+    <tr><td>fib(n) memoized</td><td>2n − 1</td><td>O(n)</td><td>O(n)</td></tr>
+    <tr><td>binary search (recursive)</td><td>log n</td><td>O(log n)</td><td>O(log n)</td></tr>
+    <tr><td>Tower of Hanoi</td><td>2ⁿ − 1</td><td>O(2ⁿ)</td><td>O(n)</td></tr>
+    <tr><td>subsets of n items</td><td>2ⁿ⁺¹ − 1</td><td>O(n · 2ⁿ)</td><td>O(n)</td></tr>
+  </table>
+  <div class="widget">
+    <div class="wt">📊 Number of calls — drag the slider</div>
+    <label>n = <input type="range" id="cxN" min="1" max="40" value="10"> <b id="cxNv"></b></label>
+    <div id="cxBars"></div>
+    <div style="font-size:12px;color:var(--muted)">Bars use a logarithmic scale so you can see them all.</div>
+  </div>
+  <div class="callout warn">Related reading in this repo: <a href="../TimeComplexity/timecomplex-slides.html" style="color:var(--accent)">Time Complexity slides</a>.</div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="lesson" id="l10">
+  <h2>10. Common mistakes & recursion vs. loops</h2><span class="tag">⏱ 6 min · avoid the traps</span>
+  <div class="grid2">
+    <div class="card"><h4>❌ Missing base case</h4><pre class="code" data-lang="java">static int sum(int n) { return n + sum(n - 1); }</pre>Fix: <code>if (n == 0) return 0;</code></div>
+    <div class="card"><h4>❌ No progress</h4><pre class="code" data-lang="java">static int f(int n) {
+    if (n == 0) return 0;
+    return f(n);   // same n!
+}</pre>Fix: call <code>f(n - 1)</code>.</div>
+    <div class="card"><h4>❌ Base case never reached</h4><pre class="code" data-lang="java">static void countdown(int n) {
+    if (n == 0) return;
+    countdown(n - 2);  // skips 0 for odd n
+}</pre>Fix: use <code>n &lt;= 0</code>.</div>
+    <div class="card"><h4>❌ Repeated work</h4>Naive Fibonacci recomputes the same values exponentially. Fix: memoization / dynamic programming.</div>
+  </div>
+  <h3>Recursion vs. iteration</h3>
+  <table>
+    <tr><th></th><th>Recursion</th><th>Loop</th></tr>
+    <tr><td>Best for</td><td>Trees, graphs, divide & conquer, backtracking</td><td>Simple repetition over a range</td></tr>
+    <tr><td>Memory</td><td>Uses call stack (risk of overflow)</td><td>Constant extra memory</td></tr>
+    <tr><td>Readability</td><td>Elegant for self-similar problems</td><td>Elegant for linear problems</td></tr>
+  </table>
+  <div class="callout ok">Rule of thumb: if the data/problem is <b>naturally nested or branching</b> → recursion. If it's a flat sequence → loop.</div>
+</section>
+
+<!-- ============ 11 ============ -->
+<section class="lesson" id="l11">
+  <h2>11. Practice problems</h2><span class="tag">⏱ your pace · try first, then peek</span>
+  <p>For each problem: <b>1)</b> name the base case, <b>2)</b> name the smaller problem, <b>3)</b> combine. Then reveal the hint and the Java solution. You can also check your thinking with the <a href="#l3" style="color:var(--accent)">visualizer in Lesson 3</a>.</p>
+  <div id="practice"></div>
+</section>
+
+<!-- ============ 12 ============ -->
+<section class="lesson" id="l12">
+  <h2>12. Quiz time</h2><span class="tag">⏱ 5 min · check yourself</span>
+  <div id="quiz"></div>
+  <div class="widget" id="quizResult" style="display:none"></div>
+  <button id="quizRestart" style="display:none">↺ Retake quiz</button>
+</section>
+
+<!-- ============ 13 ============ -->
+<section class="lesson" id="l13">
+  <h2>13. Cheat sheet</h2><span class="tag">⏱ revise before interviews</span>
+  <div class="grid3">
+    <div class="card"><h4>✅ Checklist</h4>• Base case(s) written first?<br>• Recursive call moves toward base?<br>• Return value used correctly?<br>• Depth OK for max input?</div>
+    <div class="card"><h4>🧩 Template</h4><code>solve(problem):</code><br>&nbsp;&nbsp;<code>if tiny: return answer</code><br>&nbsp;&nbsp;<code>rest = solve(smaller)</code><br>&nbsp;&nbsp;<code>return combine(rest)</code></div>
+    <div class="card"><h4>🚨 Red flags</h4>• Overlapping subproblems → memoize<br>• Very deep input → iterate or use explicit stack<br>• Need all paths → backtracking</div>
+  </div>
+  <h3>Where to go next</h3>
+  <p>Memoization &amp; Dynamic Programming · Binary Trees (DFS) · Graph DFS · Merge Sort / Quick Sort · N-Queens · Sudoku · Permutations &amp; Combinations.</p>
+  <div class="callout ok">🎉 You made it. Re-run the visualizer on new inputs and predict each step before pressing <b>Next</b> — that is the fastest way to master recursion.</div>
+</section>
+
+</main>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+/* ================= CODE SNIPPETS (Java) ================= */
+const CODE = {
+factorial:`static int factorial(int n) {
+    if (n <= 1) return 1;             // base case
+    return n * factorial(n - 1);      // recursive case
+}`,
+sumArray:`static int sum(int[] a, int i) {
+    if (i == a.length) return 0;      // base: nothing left
+    return a[i] + sum(a, i + 1);      // first + sum(rest)
+}
+// call it as: sum(arr, 0)`,
+fib:`static int fib(int n) {
+    if (n <= 1) return n;             // base: fib(0)=0, fib(1)=1
+    return fib(n - 1) + fib(n - 2);   // two calls -> tree!
+}`,
+fibMemo:`static Map<Integer, Long> memo = new HashMap<>();
+
+static long fib(int n) {
+    if (n <= 1) return n;
+    if (memo.containsKey(n)) return memo.get(n);   // already known
+    long result = fib(n - 1) + fib(n - 2);
+    memo.put(n, result);                           // store result
+    return result;
+}`,
+hanoi:`static void hanoi(int n, char from, char to, char via) {
+    if (n == 0) return;                                   // base case
+    hanoi(n - 1, from, via, to);                          // 1. move n-1 out of the way
+    System.out.println("Move disk " + n + ": " + from + " -> " + to); // 2. move biggest
+    hanoi(n - 1, via, to, from);                          // 3. move n-1 on top
+}`,
+subsets:`static void subsets(String s, int i, String cur) {
+    if (i == s.length()) {                         // base: one finished subset
+        System.out.println("\\"" + cur + "\\"");
+        return;
+    }
+    subsets(s, i + 1, cur);                        // choice 1: skip s.charAt(i)
+    subsets(s, i + 1, cur + s.charAt(i));          // choice 2: take s.charAt(i)
+}
+// call it as: subsets("abc", 0, "")`,
+sumN:`static int sumTo(int n) {
+    if (n == 0) return 0;
+    return n + sumTo(n - 1);
+}`,
+reverse:`static String reverse(String s) {
+    if (s.length() <= 1) return s;
+    return reverse(s.substring(1)) + s.charAt(0);
+}`,
+power:`static long power(long x, int n) {
+    if (n == 0) return 1;
+    long half = power(x, n / 2);
+    return (n % 2 == 0) ? half * half : half * half * x;
+}`,
+palin:`static boolean isPalindrome(String s, int l, int r) {
+    if (l >= r) return true;
+    if (s.charAt(l) != s.charAt(r)) return false;
+    return isPalindrome(s, l + 1, r - 1);
+}
+// call it as: isPalindrome(s, 0, s.length() - 1)`,
+gcd:`static int gcd(int a, int b) {
+    if (b == 0) return a;
+    return gcd(b, a % b);
+}`,
+bsearch:`static int search(int[] a, int target, int lo, int hi) {
+    if (lo > hi) return -1;                        // not found
+    int mid = lo + (hi - lo) / 2;
+    if (a[mid] == target) return mid;
+    if (a[mid] < target) return search(a, target, mid + 1, hi);
+    return search(a, target, lo, mid - 1);
+}`,
+digits:`static int sumDigits(int n) {
+    if (n < 10) return n;
+    return n % 10 + sumDigits(n / 10);
+}`
+};
+
+/* ================= tiny syntax highlighter ================= */
+const JAVA_KW = 'static int long double boolean char String void if else return new for while true false null class public private final import';
+function hl(code){
+  const re = new RegExp('(\\/\\/.*)|("(?:[^"\\\\]|\\\\.)*"|\'(?:[^\'\\\\]|\\\\.)*\')|\\b('+JAVA_KW.split(' ').join('|')+')\\b|\\b(\\d+)\\b','g');
+  return esc(code).replace(re,(m,c,s,k,n)=> c?`<span class="c">${c}</span>`: s?`<span class="s">${s}</span>`: k?`<span class="k">${k}</span>`:`<span class="n">${n}</span>`);
+}
+function addCopy(pre){
+  const b=document.createElement('button'); b.className='copy'; b.textContent='Copy';
+  b.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(pre.dataset.raw||pre.textContent.replace(/Copy$/,'')); b.textContent='Copied ✓'; setTimeout(()=>b.textContent='Copy',1200);};
+  pre.appendChild(b);
+}
+function renderCode(){
+  document.querySelectorAll('pre[data-code]').forEach(p=>{
+    const src = CODE[p.dataset.code]; p.dataset.raw=src; p.innerHTML = hl(src); addCopy(p);
+  });
+}
+document.querySelectorAll('pre[data-lang]').forEach(p=>{
+  const raw=p.textContent; p.dataset.raw=raw; p.innerHTML=hl(raw); addCopy(p);
+});
+
+/* ================= theme + progress + TOC ================= */
+if(localStorage.getItem('rec-theme')==='light') document.body.classList.add('light');
+$('themeBtn').onclick=()=>{document.body.classList.toggle('light');localStorage.setItem('rec-theme',document.body.classList.contains('light')?'light':'dark');};
+const lessons=[...document.querySelectorAll('section.lesson')];
+let done = new Set(JSON.parse(localStorage.getItem('rec-done')||'[]'));
+function saveDone(){localStorage.setItem('rec-done',JSON.stringify([...done]));}
+function buildTOC(){
+  $('toc').innerHTML = lessons.map(s=>`<a href="#${s.id}" data-id="${s.id}" class="${done.has(s.id)?'done':''}"><span class="dot">${done.has(s.id)?'✓':''}</span>${esc(s.querySelector('h2').textContent)}</a>`).join('');
+  $('toc').querySelectorAll('a').forEach(a=>a.onclick=()=>$('toc').classList.remove('open'));
+  $('progBar').style.width = (done.size/lessons.length*100)+'%';
+  $('progText').textContent = `${done.size} / ${lessons.length} lessons`;
+}
+lessons.forEach(s=>{
+  const d=document.createElement('div'); d.className='donebar';
+  d.innerHTML=`<span style="color:var(--muted)">Finished this lesson?</span><button class="good">Mark as complete ✓</button>`;
+  const btn=d.querySelector('button');
+  const upd=()=>{btn.textContent=done.has(s.id)?'Completed ✓ (click to undo)':'Mark as complete ✓';};
+  btn.onclick=()=>{done.has(s.id)?done.delete(s.id):done.add(s.id); saveDone(); buildTOC(); upd();};
+  upd(); s.appendChild(d);
+});
+$('resetBtn').onclick=()=>{if(confirm('Reset all progress?')){done.clear();saveDone();buildTOC();document.querySelectorAll('.donebar button').forEach(b=>b.textContent='Mark as complete ✓');}};
+buildTOC();
+const spy=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)
+  document.querySelectorAll('#toc a').forEach(a=>a.classList.toggle('active',a.dataset.id===e.target.id));});},{rootMargin:'-20% 0px -70% 0px'});
+lessons.forEach(s=>spy.observe(s));
+
+/* ================= L1: Russian dolls ================= */
+(function(){
+  const N=5; let k=0, phase='down'; // k = number of dolls opened
+  const sizes=[64,54,44,36,28];
+  function render(msg,cls){
+    $('dolls').innerHTML = sizes.map((z,i)=>`<div class="doll ${i<k?'open':''} ${(phase==='down'&&i===k-1)||(phase==='up'&&i===k)?'cur':''} ${i===N-1&&k===N?'solid':''}"><span style="font-size:${z}px">🪆</span><div style="font-size:12px">#${i+1}</div></div>`).join('');
+    $('dollMsg').className='msg '+(cls||''); $('dollMsg').innerHTML=msg;
+  }
+  function reset(){k=0;phase='down';$('dollBtn').textContent='Open next doll';$('dollBtn').disabled=false;render('Click <b>Open next doll</b> to start.');}
+  $('dollBtn').onclick=()=>{
+    if(phase==='down'){
+      k++;
+      if(k<N) render(`Opened doll #${k}. Inside there's <i>another doll</i> — same problem, smaller. <b>Recursive case</b>: keep opening.`,'call');
+      else {render(`Doll #${N} is <b>solid</b> — nothing inside! 🛑 <b>BASE CASE</b>. We stop opening.`,'base'); phase='up'; $('dollBtn').textContent='Close them back up (return)';}
+    } else {
+      k--; 
+      if(k>0) render(`Doll #${k+1} reports "I'm the smallest" up to doll #${k}. Doll #${k} closes. (the stack <b>unwinds</b>)`,'ret');
+      else {render('All dolls are closed and the answer reached the first caller. ✅ That is recursion: go down to the base case, then come back up.','ret'); $('dollBtn').disabled=true;}
+    }
+  };
+  $('dollReset').onclick=reset; reset();
+})();
+
+/* ================= L2: anatomy ================= */
+(function(){
+  const info={
+    base:'🛑 <b>Base case</b> — the smallest input where the answer is known directly. It has no recursive call, so it <i>stops</i> the recursion.',
+    rec:'🔁 <b>Recursive case</b> — the function calls itself on a smaller input and uses that answer to build its own.',
+    prog:'📉 <b>Progress</b> — the input must change (n → n−1) so every call is closer to the base case. No progress = infinite recursion.'
+  };
+  $('anatBtns').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#anat [data-role]').forEach(e=>e.classList.remove('hlrole'));
+    document.querySelectorAll(`#anat [data-role="${b.dataset.r}"]`).forEach(e=>e.classList.add('hlrole'));
+    $('anatMsg').innerHTML=info[b.dataset.r];
+  });
+})();
+
+/* ================= L3: call-stack visualizer ================= */
+function makeTracer(){
+  const ev=[]; let id=0, depth=0;
+  return {ev,
+    call(name,args,isBase,body){const my=id++;ev.push({t:'call',id:my,name,args,isBase,depth});depth++;const r=body();depth--;ev.push({t:'ret',id:my,name,args,val:r,depth});return r;},
+    log(s){ev.push({t:'log',s});}};
+}
+const fmt=v=>v===undefined?'void':typeof v==='string'?`"${v}"`:String(v);
+const TRACERS={
+  factorial:{label:'factorial(n)',def:'4',hint:'number 0–8',codeKey:'factorial',
+    run(v,T){const n0=clampInt(v,0,8);const f=n=>T.call('factorial',[n],n<=1,()=>n<=1?1:n*f(n-1));return f(n0);}},
+  sumDigits:{label:'sumDigits(n)',def:'4729',hint:'number up to 99999',codeKey:'digits',
+    run(v,T){const n0=clampInt(v,0,99999);const f=n=>T.call('sumDigits',[n],n<10,()=>n<10?n:(n%10)+f(Math.floor(n/10)));return f(n0);}},
+  power:{label:'power(2, n)',def:'6',hint:'exponent 0–12 (fast exponent)',codeKey:'power',
+    run(v,T){const n0=clampInt(v,0,12);const f=n=>T.call('power',[2,n],n===0,()=>{if(n===0)return 1;const h=f(Math.floor(n/2));return n%2===0?h*h:h*h*2;});return f(n0);}},
+  gcd:{label:'gcd(a, b)',def:'48,18',hint:'two numbers: a,b',codeKey:'gcd',
+    run(v,T){let [a,b]=String(v).split(/[ ,]+/).map(Number);a=clampInt(a,0,9999);b=clampInt(b,0,9999);const f=(a,b)=>T.call('gcd',[a,b],b===0,()=>b===0?a:f(b,a%b));return f(a,b);}},
+  reverse:{label:'reverse(s)',def:'hello',hint:'text up to 8 letters',codeKey:'reverse',
+    run(v,T){const s0=String(v).slice(0,8);const f=s=>T.call('reverse',['"'+s+'"'],s.length<=1,()=>s.length<=1?s:f(s.slice(1))+s[0]);return f(s0);}},
+  sumArray:{label:'sum(list)',def:'3,1,4,1,5',hint:'comma-separated numbers (max 8)',codeKey:'sumArray',
+    run(v,T){const a0=String(v).split(/[ ,]+/).filter(x=>x!=='').map(Number).filter(x=>!isNaN(x)).slice(0,8);
+      const f=a=>T.call('sum',['['+a.join(',')+']'],a.length===0,()=>a.length===0?0:a[0]+f(a.slice(1)));return f(a0);}},
+  countdown:{label:'countdown(n) — prints',def:'3',hint:'number 1–6',codeKey:null,
+    run(v,T){const n0=clampInt(v,1,6);const f=n=>T.call('countdown',[n],n===0,()=>{if(n===0)return;T.log('down '+n);f(n-1);T.log('up '+n);});return f(n0);}},
+  fib:{label:'fib(n)',def:'4',hint:'number 0–6',codeKey:'fib',
+    run(v,T){const n0=clampInt(v,0,6);const f=n=>T.call('fib',[n],n<=1,()=>n<=1?n:f(n-1)+f(n-2));return f(n0);}},
+  subsets:{label:'subsets(s) — prints',def:'abc',hint:'text up to 4 letters',codeKey:'subsets',
+    run(v,T){const s=String(v).slice(0,4);const f=(i,cur)=>T.call('subsets',['i='+i,'"'+cur+'"'],i===s.length,()=>{if(i===s.length){T.log('"'+cur+'"');return;}f(i+1,cur);f(i+1,cur+s[i]);});return f(0,'');}}
+};
+function clampInt(v,lo,hi){v=parseInt(v,10);if(isNaN(v))v=lo;return Math.max(lo,Math.min(hi,v));}
+const vz={ev:[],k:0,timer:null,fn:'factorial'};
+function initViz(){
+  $('vzFn').innerHTML=Object.entries(TRACERS).map(([k,t])=>`<option value="${k}">${t.label}</option>`).join('');
+  $('vzFn').onchange=()=>{const t=TRACERS[$('vzFn').value];$('vzIn').value=t.def;$('vzHint').textContent=t.hint;loadViz();};
+  $('vzRun').onclick=loadViz;
+  $('vzIn').onkeydown=e=>{if(e.key==='Enter')loadViz();};
+  $('vzNext').onclick=()=>stepViz(1); $('vzBack').onclick=()=>stepViz(-1);
+  $('vzReset').onclick=()=>{stopPlay();vz.k=0;drawViz();};
+  $('vzSlider').oninput=e=>{stopPlay();vz.k=+e.target.value;drawViz();};
+  $('vzPlay').onclick=()=>{ if(vz.timer){stopPlay();return;} if(vz.k>=vz.ev.length)vz.k=0; $('vzPlay').textContent='⏸ Pause'; tick(); };
+  const t=TRACERS.factorial;$('vzIn').value=t.def;$('vzHint').textContent=t.hint;loadViz();
+}
+function tick(){ if(vz.k>=vz.ev.length){stopPlay();return;} stepViz(1,true); vz.timer=setTimeout(tick,+$('vzSpeed').value); }
+function stopPlay(){clearTimeout(vz.timer);vz.timer=null;$('vzPlay').textContent='▶▶ Auto-play';}
+function loadViz(){
+  stopPlay(); vz.fn=$('vzFn').value; const T=makeTracer();
+  try{TRACERS[vz.fn].run($('vzIn').value,T);}catch(e){$('vzMsg').textContent='Error: '+e.message;return;}
+  vz.ev=T.ev;vz.k=0;$('vzSlider').max=vz.ev.length;showVzCode();drawViz();
+}
+function showVzCode(){
+  const key=TRACERS[vz.fn]&&TRACERS[vz.fn].codeKey;
+  const pre=$('vzCode'); if(!key){pre.dataset.raw=COUNTDOWN_JAVA;pre.innerHTML=hl(COUNTDOWN_JAVA);addCopy(pre);return;}
+  pre.dataset.raw=CODE[key];pre.innerHTML=hl(CODE[key]);addCopy(pre);
+}
+const COUNTDOWN_JAVA=`static void countdown(int n) {
+    if (n == 0) return;                      // base case
+    System.out.println("down " + n);         // before the call
+    countdown(n - 1);
+    System.out.println("up " + n);           // after the call
+}`;
+function stepViz(d,auto){if(!auto)stopPlay();vz.k=Math.max(0,Math.min(vz.ev.length,vz.k+d));drawViz();}
+function drawViz(){
+  const stack=[],out=[],doneL=[];let last=null;
+  for(let i=0;i<vz.k;i++){const e=vz.ev[i];
+    if(e.t==='call'){stack.push({e,got:[]});last=e;}
+    else if(e.t==='ret'){const f=stack.pop();doneL.push(`${e.name}(${e.args.join(', ')}) → ${fmt(e.val)}`);if(stack.length)stack[stack.length-1].got.push(fmt(e.val));last=e;}
+    else {out.push(e.s);last=e;}}
+  $('vzSlider').value=vz.k;$('vzStepNo').textContent=`step ${vz.k} / ${vz.ev.length}`;
+  $('vzStack').innerHTML=stack.map((f,i)=>{const top=i===stack.length-1;
+    return `<div class="frame ${top?'top':''} ${f.e.isBase&&top?'isbase':''}">${f.e.name}(${f.e.args.join(', ')})<small>${top?(f.e.isBase?'🛑 base case — returns directly':'▶ running'):'⏳ waiting for the call above to return'}${f.got.length?` <span class="got">· received ${f.got.join(', ')}</span>`:''}</small></div>`;}).join('')||'<div style="color:var(--muted);padding:8px">(empty stack)</div>';
+  $('vzOut').textContent=out.length?out.join('\n'):'—'; $('vzDone').textContent=doneL.length?doneL.join('\n'):'—';
+  const m=$('vzMsg');
+  if(vz.k===0){m.className='msg';m.innerHTML=`Press <b>Next ▶</b> to start. Predict what happens before you click!`;}
+  else if(last.t==='call'){const d=last.isBase;m.className='msg '+(d?'base':'call');m.innerHTML=`📞 Call <b>${last.name}(${last.args.join(', ')})</b> — ${d?'<b>base case</b>: answer is known, no further call.':'not the base case, so it must wait for a smaller call.'} Stack depth: ${stack.length}`;}
+  else if(last.t==='ret'){m.className='msg ret';m.innerHTML=`✅ <b>${last.name}(${last.args.join(', ')})</b> returns <b>${fmt(last.val)}</b>${stack.length?' to the caller below it (frame popped)':' — final answer!'}`;}
+  else {m.className='msg';m.innerHTML=`🖨 Printed <b>${esc(last.s)}</b>`;}
+  if(vz.k===vz.ev.length&&vz.ev.length){const r=vz.ev.filter(e=>e.t==='ret').pop();m.innerHTML+=`<br>🏁 Done. Final result: <b>${fmt(r.val)}</b>`;}
+}
+initViz();
+// stack overflow demo
+(function(){
+  let timer=null,n=0;
+  function reset(){clearInterval(timer);n=0;$('soStack').innerHTML='';$('soStack').classList.remove('shake');$('soMsg').className='msg';$('soMsg').innerHTML='Code: <code>static int bad(int n) { return bad(n - 1); }</code> — never stops.';$('soBtn').disabled=false;}
+  $('soBtn').onclick=()=>{reset();$('soBtn').disabled=true;timer=setInterval(()=>{
+    n++;const d=document.createElement('div');d.className='frame';d.textContent=`bad(${5-n})`;$('soStack').appendChild(d);
+    if(n>=14){clearInterval(timer);$('soStack').classList.add('shake');$('soMsg').className='msg';$('soMsg').style.borderColor='var(--red)';
+      $('soMsg').innerHTML='💥 <b class="err">StackOverflow!</b> The stack ran out of space. The JVM stack is small (typically around 10,000–20,000 frames by default), and Java throws a <code>StackOverflowError</code>.';}
+  },260);};
+  $('soReset').onclick=()=>{reset();$('soMsg').style.borderColor='';};
+})();
+
+/* ================= L4: reveal ================= */
+(function(){
+  const items=()=>[...document.querySelectorAll('#rvBox .rv')];
+  $('rvBtn').onclick=()=>{const h=items().find(e=>!e.classList.contains('show'));if(h)h.classList.add('show');else $('rvBtn').disabled=true;};
+  $('rvReset').onclick=()=>{items().forEach((e,i)=>e.classList.toggle('show',i===0));$('rvBtn').disabled=false;};
+})();
+
+/* ================= L5: fib tree ================= */
+(function(){
+  let order=[],root=null,shown=0,playT=null,pos=[];
+  function build(n,memo){
+    order=[];const cache={};
+    const f=k=>{const node={n:k,ch:[],hit:false,i:order.length};order.push(node);
+      if(k<=1){node.val=k;return node;}
+      if(memo&&cache[k]!==undefined){node.hit=true;node.val=cache[k];return node;}
+      node.ch=[f(k-1),f(k-2)];node.val=node.ch[0].val+node.ch[1].val;if(memo)cache[k]=node.val;return node;};
+    root=f(n);
+    let leaf=0,maxD=0;
+    const lay=(nd,d)=>{maxD=Math.max(maxD,d);nd.y=d;if(!nd.ch.length){nd.x=leaf++;}else{nd.ch.forEach(c=>lay(c,d+1));nd.x=(nd.ch[0].x+nd.ch[1].x)/2;}};
+    lay(root,0);return {leaves:leaf,maxD};
+  }
+  function draw(){
+    const n=clampInt($('fbN').value,2,7);const memo=$('fbMemo').checked;const dim=build(n,memo);
+    if(!window._fbInit||window._fbKey!==n+'|'+memo){shown=order.length;window._fbInit=true;window._fbKey=n+'|'+memo;}
+    stopPlay();render(dim,n,memo);
+  }
+  function render(dim,n,memo){
+    const W=dim.leaves*50+20,H=(dim.maxD+1)*62+10;const svg=$('fbSvg');
+    svg.setAttribute('width',W);svg.setAttribute('height',H);
+    const X=nd=>nd.x*50+35,Y=nd=>nd.y*62+30;let s='';
+    order.forEach(nd=>{if(nd.i<shown)nd.ch.forEach(c=>{if(c.i<shown)s+=`<line class="tedge" x1="${X(nd)}" y1="${Y(nd)}" x2="${X(c)}" y2="${Y(c)}"/>`;});});
+    order.forEach(nd=>{if(nd.i<shown){const col=nd.hit?'var(--amber)':nd.n<=1?'var(--green)':'var(--accent)';
+      s+=`<g class="tnode" data-n="${nd.n}" data-i="${nd.i}"><circle cx="${X(nd)}" cy="${Y(nd)}" r="19" fill="${col}"/><text x="${X(nd)}" y="${Y(nd)}">f(${nd.n})</text></g>`;}});
+    svg.innerHTML=s;
+    svg.querySelectorAll('.tnode').forEach(g=>{
+      g.onmouseenter=()=>svg.querySelectorAll(`.tnode[data-n="${g.dataset.n}"]`).forEach(x=>x.classList.add('hl'));
+      g.onmouseleave=()=>svg.querySelectorAll('.tnode').forEach(x=>x.classList.remove('hl'));});
+    const total=order.length;const cur=shown>0?order[shown-1]:null;
+    const counts={};order.slice(0,shown).forEach(x=>counts[x.n]=(counts[x.n]||0)+1);
+    const repeats=Object.entries(counts).filter(([k,v])=>v>1).map(([k,v])=>`f(${k})×${v}`).join(', ');
+    $('fbMsg').className='msg';
+    $('fbMsg').innerHTML=`Calls shown: <b>${shown} / ${total}</b> for fib(${n}) ${memo?'<span style="color:var(--amber)">(memoized)</span>':'(naive)'}${cur?` — latest: <b>fib(${cur.n})</b>${cur.hit?' found in cache ⚡':cur.n<=1?' base case':''}`:''}<br>${repeats?'Repeated calls so far: '+repeats:'No repeats yet.'}`;
+  }
+  function stopPlay(){clearInterval(playT);playT=null;$('fbPlay').textContent='▶▶ Play';}
+  const redo=()=>{window._fbKey=null;draw();};
+  $('fbN').onchange=redo;$('fbMemo').onchange=redo;
+  const rr=()=>{const n=clampInt($('fbN').value,2,7);render({leaves:leavesOf(),maxD:maxDepthOf()},n,$('fbMemo').checked);};
+  const leavesOf=()=>order.filter(x=>!x.ch.length).length, maxDepthOf=()=>Math.max(...order.map(x=>x.y));
+  $('fbNext').onclick=()=>{stopPlay();if(shown<order.length){shown++;rr();}};
+  $('fbBack').onclick=()=>{stopPlay();if(shown>0){shown--;rr();}};
+  $('fbAll').onclick=()=>{stopPlay();shown=order.length;rr();};
+  $('fbPlay').onclick=()=>{if(playT){stopPlay();return;}if(shown>=order.length)shown=0;$('fbPlay').textContent='⏸ Pause';rr();
+    playT=setInterval(()=>{if(shown>=order.length){stopPlay();return;}shown++;rr();},450);};
+  redo();
+})();
+
+/* ================= L7: Hanoi ================= */
+(function(){
+  let pegs,sel=null,moves=0,n=3,busy=false,timer=null;
+  const colors=['#ff6b6b','#ffb84d','#ffe066','#3ecf8e','#5aa9ff','#b388ff'];
+  function newGame(){clearInterval(timer);busy=false;n=+$('hnN').value;pegs=[[],[],[]];for(let i=n;i>=1;i--)pegs[0].push(i);sel=null;moves=0;
+    $('hnLog').textContent='Recursive log appears here during auto-solve…';msg('Pick up the top disk of a peg, then choose where to drop it.');draw();}
+  function msg(t,c){$('hnMsg').className='msg '+(c||'');$('hnMsg').innerHTML=t;}
+  function draw(){
+    $('pegs').innerHTML=pegs.map((p,pi)=>`<div class="peg ${sel===pi?'sel':''}" data-p="${pi}">${p.map((d,di)=>`<div class="disk" style="width:${30+d*(60/n)*1.4}%;background:${colors[(d-1)%6]};${sel===pi&&di===p.length-1?'transform:translateY(-8px)':''}"></div>`).join('')}<div class="lbl">${'ABC'[pi]}</div></div>`).join('');
+    $('hnStat').textContent=`Moves: ${moves} (minimum ${Math.pow(2,n)-1})`;
+    $('pegs').querySelectorAll('.peg').forEach(el=>el.onclick=()=>click(+el.dataset.p));
+  }
+  function click(p){
+    if(busy)return;
+    if(sel===null){if(!pegs[p].length)return;sel=p;draw();return;}
+    if(sel===p){sel=null;draw();return;}
+    const d=pegs[sel][pegs[sel].length-1],t=pegs[p][pegs[p].length-1];
+    if(t&&t<d){msg('🚫 A bigger disk can\'t go on a smaller one!');sel=null;draw();$('pegs').classList.add('shake');setTimeout(()=>$('pegs').classList.remove('shake'),400);return;}
+    pegs[p].push(pegs[sel].pop());sel=null;moves++;draw();
+    if(pegs[2].length===n){const best=Math.pow(2,n)-1;msg(`🎉 Solved in ${moves} moves! ${moves===best?'That is the perfect minimum.':'Minimum possible is '+best+' — try again!'}`,'ret');}
+    else msg('Good. Keep going.');
+  }
+  $('hnReset').onclick=newGame;$('hnN').onchange=newGame;
+  $('hnSolve').onclick=()=>{
+    newGame();busy=true;const list=[];
+    const h=(k,a,b,c,dep)=>{if(k===0){return;}
+      list.push({t:'say',s:'  '.repeat(dep)+`hanoi(${k}, ${a}→${b}, via ${c})  — first move ${k-1} out of the way`});
+      h(k-1,a,c,b,dep+1);list.push({t:'mv',k,a,b,s:'  '.repeat(dep)+`➤ move disk ${k}: ${a} → ${b}`});h(k-1,c,b,a,dep+1);};
+    h(n,'A','C','B',0);let i=0;$('hnLog').textContent='';
+    timer=setInterval(()=>{if(i>=list.length){clearInterval(timer);busy=false;msg(`🤖 Solved recursively in ${moves} moves = 2<sup>${n}</sup> − 1.`,'ret');return;}
+      const e=list[i++];$('hnLog').textContent+=e.s+'\n';$('hnLog').scrollTop=1e6;
+      if(e.t==='mv'){const f='ABC'.indexOf(e.a),t='ABC'.indexOf(e.b);pegs[t].push(pegs[f].pop());moves++;draw();}},n>=5?160:420);
+  };
+  newGame();
+})();
+
+/* ================= L8: subsets explorer ================= */
+(function(){
+  const upd=()=>{const n=+$('ssN').value;const items='abcdefghijkl'.slice(0,n);
+    $('ssTxt').textContent=`${n} item${n===1?'':'s'} → 2^${n} = ${Math.pow(2,n).toLocaleString()} subsets`;
+    const res=[];const f=(i,cur)=>{if(res.length>=256)return;if(i===n){res.push(cur===''?'∅':'{'+cur.split('').join(',')+'}');return;}f(i+1,cur);f(i+1,cur+items[i]);};f(0,'');
+    $('ssList').textContent=res.join('   ')+(Math.pow(2,n)>256?'   … (showing first 256)':'');};
+  $('ssN').oninput=upd;upd();
+})();
+
+/* ================= L9: complexity bars ================= */
+(function(){
+  const upd=()=>{const n=+$('cxN').value;$('cxNv').textContent=n;
+    const c=[1,1];for(let i=2;i<=n;i++)c[i]=1+c[i-1]+c[i-2];
+    const rows=[['factorial / sum (n)',n,'var(--green)'],['fib memoized (2n−1)',n<=1?1:2*n-1,'var(--accent)'],['fib naive',c[n],'var(--red)']];
+    const mx=Math.log10(rows[2].slice(1)[0]+1)||1;
+    $('cxBars').innerHTML=rows.map(r=>`<div class="bar"><span class="lab">${r[0]}</span><div class="tr"><div class="fl" style="width:${Math.max(2,Math.log10(r[1]+1)/mx*100)}%;background:${r[2]}"></div></div><span class="num">${r[1].toLocaleString()}</span></div>`).join('');};
+  $('cxN').oninput=upd;upd();
+})();
+
+/* ================= L11: practice ================= */
+const PROBLEMS=[
+ {t:'Sum of 1 to n',lv:'easy',q:'Write <code>sumTo(n)</code> that returns 1 + 2 + … + n using recursion.',hint:'Base: n = 0 → 0. Smaller problem: sumTo(n − 1). Combine: n + that.',key:'sumN'},
+ {t:'Sum of digits',lv:'easy',q:'<code>sumDigits(4729)</code> should return 4+7+2+9 = 22.',hint:'Last digit = n % 10. The rest = n / 10 (integer division). Base: n &lt; 10.',key:'digits'},
+ {t:'Reverse a string',lv:'easy',q:'Reverse <code>"hello"</code> without a loop.',hint:'Reverse(rest of string) + first character. Base: length ≤ 1.',key:'reverse'},
+ {t:'Is it a palindrome?',lv:'easy',q:'Return true if a string reads the same backwards (e.g. "racecar").',hint:'Compare first and last characters; if equal, solve for the middle part. Base: fewer than 2 characters left → true.',key:'palin'},
+ {t:'Greatest common divisor',lv:'med',q:'Euclid: <code>gcd(48, 18) = 6</code>.',hint:'gcd(a, b) = gcd(b, a % b). Base: b = 0 → a.',key:'gcd'},
+ {t:'Fast power',lv:'med',q:'Compute x<sup>n</sup> in O(log n) instead of O(n).',hint:'x^n = (x^(n/2))². If n is odd multiply by one extra x.',key:'power'},
+ {t:'Recursive binary search',lv:'med',q:'Search a sorted array by halving the range each call.',hint:'Compare with the middle element and recurse on the left or right half. Base: lo &gt; hi → not found.',key:'bsearch'},
+ {t:'All subsets',lv:'hard',q:'Print every subset of a string such as "abc".',hint:'For each character, two branches: skip it or take it. Base: end of string → print.',key:'subsets'}
+];
+function renderPractice(){
+  $('practice').innerHTML=PROBLEMS.map((p,i)=>`<div class="card" style="margin:12px 0"><h4>${i+1}. ${p.t} <span class="badge ${p.lv}">${p.lv.toUpperCase()}</span></h4><p>${p.q}</p>
+    <details><summary>💡 Hint</summary>${p.hint}</details>
+    <details><summary>✅ Solution (Java)</summary><pre class="code" data-key="${p.key}">${hl(CODE[p.key])}</pre></details></div>`).join('');
+  document.querySelectorAll('#practice pre.code').forEach(p=>{p.dataset.raw=CODE[p.dataset.key];addCopy(p);});
+}
+
+/* ================= L12: quiz ================= */
+const QUIZ=[
+ {q:'What stops a recursive function from calling itself forever?',o:['The recursive case','The base case','The return type','The compiler'],a:1,e:'The base case returns without recursing, ending the chain.'},
+ {q:'What does f(3) return?',code:'static int f(int n) {\n    if (n == 0) return 0;\n    return n + f(n - 1);\n}',o:['3','5','6','Infinite loop'],a:2,e:'f(3) = 3 + f(2) = 3 + 2 + f(1) = 3 + 2 + 1 + f(0) = 6.'},
+ {q:'What is printed by p(3)?',code:'static void p(int n) {\n    if (n == 0) return;\n    System.out.print(n + " ");\n    p(n - 1);\n    System.out.print(n + " ");\n}',o:['3 2 1','1 2 3','3 2 1 1 2 3','1 2 3 3 2 1'],a:2,e:'Code before the call runs on the way down (3 2 1); code after runs on the way up (1 2 3).'},
+ {q:'A recursive function has no base case. What happens?',o:['Returns 0','Stack overflow','Compile-time success and correct output','It runs once'],a:1,e:'Frames pile up on the call stack until memory for it runs out.'},
+ {q:'Time complexity of naive recursive fib(n)?',o:['O(n)','O(log n)','O(n²)','O(2ⁿ)'],a:3,e:'Each call makes two calls, so the call tree roughly doubles each level.'},
+ {q:'Space (stack) complexity of recursive factorial(n)?',o:['O(1)','O(n)','O(n²)','O(log n)'],a:1,e:'n frames are on the stack at the deepest point.'},
+ {q:'Which function is tail recursive?',o:['return n * f(n - 1);','return f(n - 1) + f(n - 2);','return f(n - 1, acc * n);','return 1 + f(n - 1);'],a:2,e:'In a tail call the recursive call is the very last action — nothing is done with its result.'},
+ {q:'How many moves does Tower of Hanoi need for 4 disks?',o:['8','15','16','31'],a:1,e:'2⁴ − 1 = 15.'},
+ {q:'Memoization speeds up recursion by…',o:['Removing the base case','Using more loops','Caching results of repeated subproblems','Making the stack bigger'],a:2,e:'Each distinct subproblem is solved once and reused.'},
+ {q:'Which problem is most naturally recursive?',o:['Summing numbers in a flat list with a for loop','Traversing a folder tree with sub-folders','Printing 1 to 10','Swapping two variables'],a:1,e:'Folders contain folders — a self-similar structure.'}
+];
+(function(){
+  let score=0,answered=0;
+  function build(){
+    score=0;answered=0;$('quizResult').style.display='none';$('quizRestart').style.display='none';
+    $('quiz').innerHTML=QUIZ.map((q,i)=>`<div class="card" style="margin:12px 0" data-i="${i}"><b>Q${i+1}.</b> ${esc(q.q)}${q.code?`<pre class="code" data-lang="java">${esc(q.code)}</pre>`:''}
+      ${q.o.map((o,j)=>`<button class="opt" data-j="${j}">${esc(o)}</button>`).join('')}<div class="why" style="display:none;margin-top:6px"></div></div>`).join('');
+    document.querySelectorAll('#quiz pre[data-lang]').forEach(p=>{const r=p.textContent;p.innerHTML=hl(r);});
+    document.querySelectorAll('#quiz .card').forEach(c=>{const q=QUIZ[+c.dataset.i];
+      c.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+        if(c.dataset.done)return;c.dataset.done=1;answered++;const j=+b.dataset.j;
+        c.querySelectorAll('.opt')[q.a].classList.add('right');
+        if(j===q.a)score++;else b.classList.add('wrong');
+        const w=c.querySelector('.why');w.style.display='block';w.innerHTML=(j===q.a?'✅ Correct. ':'❌ Not quite. ')+esc(q.e);
+        if(answered===QUIZ.length){const r=$('quizResult');r.style.display='block';
+          r.innerHTML=`<b style="font-size:20px">Score: ${score} / ${QUIZ.length}</b><br>${score===QUIZ.length?'🏆 Perfect! You understand recursion.':score>=7?'👏 Great job — review the ones you missed.':'📖 Keep going — revisit Lessons 2–5 and use the visualizer.'}`;
+          $('quizRestart').style.display='inline-block';}
+      });});
+  }
+  $('quizRestart').onclick=build;build();
+})();
+
+renderCode();renderPractice();
+</script>
+</body>
+</html>

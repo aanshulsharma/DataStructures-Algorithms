@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Time Complexity — Explained with a Deck of Cards</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/night.css" id="theme">
+<style>
+  :root{
+    --o1:#2e7d32; --logn:#1565c0; --n:#ef6c00;
+    --n2:#c62828; --n3:#ad1457; --twon:#6a1b9a; --nf:#212121;
+  }
+  .reveal { font-size: 30px; }
+  .reveal h1, .reveal h2 { text-transform: none; }
+  .reveal h2 { font-size: 1.6em; margin-bottom: .4em; }
+  .badge{
+    display:inline-block; padding:6px 18px; border-radius:16px;
+    font-weight:bold; color:#fff; font-size:.55em; margin-bottom:.5em;
+    box-shadow: 0 2px 6px rgba(0,0,0,.4);
+  }
+  .b-o1{background:var(--o1)} .b-logn{background:var(--logn)} .b-n{background:var(--n)}
+  .b-n2{background:var(--n2)} .b-n3{background:var(--n3)} .b-2n{background:var(--twon)} .b-nf{background:var(--nf)}
+
+  .cards { font-size: 1.4em; letter-spacing: .1em; }
+  .highlight-box{
+    border: 3px solid #f5c211; border-radius: 10px; padding: 6px 10px; display:inline-block;
+  }
+  .dim { opacity: .3; }
+
+  /* Growth bar chart */
+  .barchart { display:flex; flex-direction:column; gap:10px; text-align:left; margin-top:20px; }
+  .bar-row { display:flex; align-items:center; gap:14px; }
+  .bar-label { width: 150px; font-weight:bold; text-align:right; font-size:.7em; }
+  .bar-track { flex:1; background:rgba(255,255,255,.08); border-radius:6px; height: 34px; overflow:hidden; }
+  .bar-fill { height:100%; width:0; border-radius:6px; display:flex; align-items:center;
+              justify-content:flex-end; color:#fff; font-size:.55em; padding-right:8px;
+              transition: width 1.4s cubic-bezier(.2,.8,.2,1); white-space:nowrap; }
+  .fragment.visible .bar-fill.fill-o1   { width: 2%; }
+  .fragment.visible .bar-fill.fill-logn { width: 6%; }
+  .fragment.visible .bar-fill.fill-n    { width: 15%; }
+  .fragment.visible .bar-fill.fill-n2   { width: 32%; }
+  .fragment.visible .bar-fill.fill-n3   { width: 55%; }
+  .fragment.visible .bar-fill.fill-2n   { width: 65%; }
+  .fragment.visible .bar-fill.fill-nf   { width: 100%; }
+
+  .toc a { color: #8ab4f8; }
+  table.recap { font-size:.65em; }
+  table.recap td, table.recap th { padding: 8px 14px; }
+
+  .step-anim { transition: all .5s ease; }
+
+  .coin { display:inline-block; width:60px; height:60px; border-radius:50%;
+          background:radial-gradient(circle at 30% 30%, #ffe082, #f9a825); margin:6px;
+          box-shadow: 0 3px 8px rgba(0,0,0,.5); font-weight:bold; line-height:60px; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+  <!-- 1. TITLE -->
+  <section>
+    <h1>⏱️ Time Complexity</h1>
+    <h3>Explained with a Deck of Cards 🃏</h3>
+    <p class="fragment">A visual, story-driven guide to Big O notation</p>
+  </section>
+
+  <!-- 2. BIG QUESTION -->
+  <section>
+    <h2>🤔 The Big Question</h2>
+    <blockquote class="fragment fade-up">
+      "If the number of items I'm searching through keeps growing,<br>
+      how much <b>MORE</b> time will it take me?"
+    </blockquote>
+    <p class="fragment fade-up">That question is exactly what <b>Time Complexity</b> answers.</p>
+    <p class="fragment fade-up">It's just a way to describe: <i>"as things get bigger, how much slower do I get?"</i></p>
+  </section>
+
+  <!-- 3. O(N) INTRO -->
+  <section>
+    <section>
+      <span class="badge b-n">O(N) · LINEAR</span>
+      <h2>Story 1: Shuffled Deck</h2>
+      <p>Cards thrown in <b>random order</b>. Find the <b>6 of Spades</b>.</p>
+      <p class="cards fragment">🎴 🎴 🎴 🎴 🎴 🎴 🎴 🎴 🎴 🎴</p>
+      <p class="fragment">Only way: check <b>every card, one by one</b>, until found.</p>
+    </section>
+    <section>
+      <h3>The Pattern</h3>
+      <ul>
+        <li class="fragment">10 cards → check up to 10</li>
+        <li class="fragment">100 cards → check up to 100</li>
+        <li class="fragment">1,000 cards → check up to 1,000</li>
+      </ul>
+      <p class="fragment"><b>Double the cards → double the work.</b></p>
+      <p class="fragment highlight-box">📌 This is <b>O(N)</b> — work grows at the same rate as the input.</p>
+    </section>
+  </section>
+
+  <!-- 4. O(log N) -->
+  <section>
+    <section>
+      <span class="badge b-logn">O(log N) · LOGARITHMIC</span>
+      <h2>Story 2: Sorted Deck</h2>
+      <p>Same cards, now <b>sorted</b>. Find the <b>7 of Hearts</b>.</p>
+    </section>
+    <section>
+      <h3>Step 1 — open the middle card</h3>
+      <p class="cards">🎴 🎴 🎴 🎴 <span class="highlight-box">🎴 6</span> 🎴 🎴 🎴 🎴</p>
+      <p class="fragment">7 &gt; 6 → must be on the <b>right side</b>.</p>
+      <p class="fragment">Left half? <span class="dim">completely ignored 🚮</span></p>
+    </section>
+    <section>
+      <h3>Step 2 — open the middle of what's left</h3>
+      <p class="cards">🎴 🎴 <span class="highlight-box">🎴 7</span> 🎴</p>
+      <p class="fragment">✅ Found it — in just <b>3 checks</b>, out of 10 cards!</p>
+    </section>
+    <section>
+      <h3>The Pattern</h3>
+      <p class="fragment">Every step throws away <b>half</b> of what remains.</p>
+      <table class="fragment">
+        <tr><th>Cards</th><th>Checks needed</th></tr>
+        <tr><td>8</td><td>3</td></tr>
+        <tr><td>1,000</td><td>~10</td></tr>
+        <tr><td>1,000,000</td><td>~20</td></tr>
+      </table>
+      <p class="fragment highlight-box">📌 This is <b>O(log N)</b> — work barely grows, even with huge input.</p>
+    </section>
+  </section>
+
+  <!-- 5. O(1) -->
+  <section>
+    <section>
+      <span class="badge b-o1">O(1) · CONSTANT</span>
+      <h2>Story 3: Numbered Bowls</h2>
+      <p>6 bowls, each holding blackberries <b>matching its position</b>.</p>
+      <p class="fragment">🍇1️⃣ &nbsp; 🍇🍇2️⃣ &nbsp; 🍇🍇🍇3️⃣ &nbsp; 🍇🍇🍇🍇4️⃣ &nbsp; 🍇🍇🍇🍇🍇5️⃣ &nbsp; 🍇🍇🍇🍇🍇🍇6️⃣</p>
+    </section>
+    <section>
+      <p>"How many berries in bowl 5?" 🤔</p>
+      <p class="fragment">No searching needed — <b>go straight to bowl 5</b>. Answer: 5. ✅</p>
+      <p class="fragment highlight-box">📌 This is <b>O(1)</b> — work never changes, no matter the input size.</p>
+    </section>
+  </section>
+
+  <!-- 6. COMPARISON -->
+  <section>
+    <h2>⚔️ So What's the Difference?</h2>
+    <table class="recap fragment">
+      <tr><th></th><th>O(N)</th><th>O(log N)</th><th>O(1)</th></tr>
+      <tr><td>Search style</td><td>One by one</td><td>Halve each time</td><td>Direct lookup</td></tr>
+      <tr><td>Requirement</td><td>Any order</td><td>Must be sorted</td><td>Position = answer</td></tr>
+      <tr><td>1,000 items</td><td>Up to 1,000</td><td>~10</td><td>Always 1</td></tr>
+    </table>
+    <p class="fragment">📖 O(N): read every page &nbsp; | &nbsp; 📗 O(log N): use a dictionary &nbsp; | &nbsp; 🔑 O(1): look up by locker number</p>
+  </section>
+
+  <!-- 7. O(N^2) -->
+  <section>
+    <section>
+      <span class="badge b-n2">O(N²) · QUADRATIC</span>
+      <h2>Story 4: Two Decks</h2>
+      <p>Pick a card from Deck 1 (say <b>8</b>) → search all of Deck 2 for its match.</p>
+      <p class="cards fragment">8 → 🎴🎴🎴🎴🎴<span class="highlight-box">8</span>🎴🎴</p>
+    </section>
+    <section>
+      <h3>Now repeat for EVERY card in Deck 1</h3>
+      <pre class="fragment"><code>for each card in Deck 1 (N cards):
+    search all of Deck 2 (N cards)</code></pre>
+      <p class="fragment">A <b>loop inside a loop</b> → N work, done N times.</p>
+      <table class="fragment">
+        <tr><th>Cards</th><th>Checks (worst case)</th></tr>
+        <tr><td>10</td><td>100</td></tr>
+        <tr><td>1,000</td><td>1,000,000</td></tr>
+      </table>
+      <p class="fragment highlight-box">📌 This is <b>O(N²)</b> — grows by the square of N.</p>
+    </section>
+  </section>
+
+  <!-- 8. O(N^3) -->
+  <section>
+    <span class="badge b-n3">O(N³) · CUBIC</span>
+    <h2>Story 5: Three Decks</h2>
+    <p class="fragment">Same idea, but <b>3 nested loops</b> — one per deck.</p>
+    <pre class="fragment"><code>for each card in Deck 1:
+  for each card in Deck 2:
+    search all of Deck 3</code></pre>
+    <p class="fragment highlight-box">📌 <b>O(N³)</b> — every extra deck multiplies the work by N again.</p>
+  </section>
+
+  <!-- 9. O(2^n) -->
+  <section>
+    <section>
+      <span class="badge b-2n">O(2ⁿ) · EXPONENTIAL</span>
+      <h2>Story 6: Flipping Coins</h2>
+      <p>1 coin → <span class="coin fragment">H/T</span></p>
+    </section>
+    <section>
+      <p>2 coins → possibilities <b>double</b></p>
+      <p class="fragment">HH &nbsp; HT &nbsp; TH &nbsp; TT &nbsp;(4 outcomes)</p>
+      <p class="fragment">3 coins → double again → <b>8 outcomes</b></p>
+      <p class="fragment highlight-box">📌 <b>O(2ⁿ)</b> — every new input <b>multiplies</b> the work by 2.</p>
+      <p class="fragment">⚠️ Grows so fast it's often <b>unmanageable</b> for large inputs.</p>
+    </section>
+  </section>
+
+  <!-- 10. O(N!) -->
+  <section>
+    <span class="badge b-nf">O(N!) · FACTORIAL</span>
+    <h2>Story 7: Seating Passengers</h2>
+    <p>3 seats, 3 passengers. How many seating orders?</p>
+    <p class="fragment">Seat 1: 3 choices &nbsp; → &nbsp; Seat 2: 2 choices &nbsp; → &nbsp; Seat 3: 1 choice</p>
+    <h3 class="fragment">3 × 2 × 1 = 6 arrangements</h3>
+    <p class="fragment highlight-box">📌 <b>O(N!)</b> — grows even faster than O(2ⁿ). Quickly impossible to compute.</p>
+  </section>
+
+  <!-- 11. FULL RECAP TABLE -->
+  <section>
+    <h2>📋 Full Recap</h2>
+    <table class="recap">
+      <tr><th>Complexity</th><th>Example</th></tr>
+      <tr class="fragment"><td><span class="badge b-o1">O(1)</span></td><td>Numbered bowls</td></tr>
+      <tr class="fragment"><td><span class="badge b-logn">O(log N)</span></td><td>Sorted deck search</td></tr>
+      <tr class="fragment"><td><span class="badge b-n">O(N)</span></td><td>Shuffled deck search</td></tr>
+      <tr class="fragment"><td><span class="badge b-n2">O(N²)</span></td><td>Matching two decks</td></tr>
+      <tr class="fragment"><td><span class="badge b-n3">O(N³)</span></td><td>Matching three decks</td></tr>
+      <tr class="fragment"><td><span class="badge b-2n">O(2ⁿ)</span></td><td>Coin flip outcomes</td></tr>
+      <tr class="fragment"><td><span class="badge b-nf">O(N!)</span></td><td>Seating arrangements</td></tr>
+    </table>
+  </section>
+
+  <!-- 12. ANIMATED BAR CHART -->
+  <section>
+    <h2>📈 Growth Ranked (N = 10)</h2>
+    <div class="barchart">
+      <div class="bar-row fragment"><div class="bar-label">O(1)</div><div class="bar-track"><div class="bar-fill fill-o1" style="background:var(--o1)">1</div></div></div>
+      <div class="bar-row fragment"><div class="bar-label">O(log N)</div><div class="bar-track"><div class="bar-fill fill-logn" style="background:var(--logn)">~3</div></div></div>
+      <div class="bar-row fragment"><div class="bar-label">O(N)</div><div class="bar-track"><div class="bar-fill fill-n" style="background:var(--n)">10</div></div></div>
+      <div class="bar-row fragment"><div class="bar-label">O(N²)</div><div class="bar-track"><div class="bar-fill fill-n2" style="background:var(--n2)">100</div></div></div>
+      <div class="bar-row fragment"><div class="bar-label">O(N³)</div><div class="bar-track"><div class="bar-fill fill-n3" style="background:var(--n3)">1,000</div></div></div>
+      <div class="bar-row fragment"><div class="bar-label">O(2ⁿ)</div><div class="bar-track"><div class="bar-fill fill-2n" style="background:var(--twon)">1,024</div></div></div>
+      <div class="bar-row fragment"><div class="bar-label">O(N!)</div><div class="bar-track"><div class="bar-fill fill-nf" style="background:var(--nf)">3,628,800</div></div></div>
+    </div>
+    <p class="fragment">⚡ The further down, the fewer inputs it can handle before becoming too slow.</p>
+  </section>
+
+  <!-- 13. WHY BIG O -->
+  <section>
+    <h2>❓ Why "Big O"?</h2>
+    <p class="fragment">We describe speed as the <b>growth rate relative to input size</b>.</p>
+    <p class="fragment">Input 10 → 10 sec. Input 1,000 → 1,000 sec. That's <b>linear</b> — "order of N".</p>
+    <p class="fragment"><b>O</b> = <b>Order Of</b> — the <b>upper bound</b> of how fast the work grows.</p>
+  </section>
+
+  <!-- 14. THANK YOU -->
+  <section>
+    <h1>🎉 That's Big O!</h1>
+    <p class="fragment">Same kind of problem, wildly different amounts of work.</p>
+    <p class="fragment">Questions? 🙋</p>
+  </section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    controls: true,
+    progress: true,
+    center: true,
+    transition: 'slide',
+    slideNumber: true,
+  });
+</script>
+</body>
+</html>
